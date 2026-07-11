@@ -1,0 +1,21 @@
+[Unit]
+Description=Gaming-aware CI throttle watcher for the Steam Machine
+Documentation=file://%h/steam-machine-ci/README.md
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/gaming-watcher.sh
+Restart=always
+RestartSec=5
+
+# --- Throttle configuration (defaults shown; uncomment to change) ---
+# Default is full pause. Switch to cpu-cap if you enable the self-hosted
+# runner (see the README) -- a frozen runner blows GitHub's wall-clock job
+# timeout, so keep the job limping along on one core instead.
+# Environment=THROTTLE_MODE=cap
+# Environment=CAP_CPUS=1
+# Environment=POLL_SECONDS=5
+
+[Install]
+WantedBy=default.target
