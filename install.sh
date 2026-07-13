@@ -14,6 +14,10 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONTAINER_NAME="${CONTAINER_NAME:-ci-runner}"
+# Base image for ci-runner. Override to bring your own toolchain — e.g. an image
+# with your language runtime + Playwright already baked in:
+#   IMAGE=ghcr.io/you/your-ci-image:tag ./install.sh
+# The provisioning below is idempotent, so it no-ops for anything already present.
 IMAGE="${IMAGE:-ubuntu:24.04}"
 NODE_MAJOR="${NODE_MAJOR:-22}"
 
@@ -51,12 +55,15 @@ if podman container exists "$CONTAINER_NAME"; then
     echo "To rebuild it from scratch: podman rm -f $CONTAINER_NAME && ./install.sh"
 else
     distrobox create --yes --name "$CONTAINER_NAME" --image "$IMAGE"
-    echo "provisioning Node ${NODE_MAJOR} + Playwright system deps (one-time)..."
+    echo "provisioning container (one-time; no-ops for tools already in the image)..."
     distrobox enter "$CONTAINER_NAME" -- bash -euc "
         sudo apt-get update
         sudo apt-get install -y curl ca-certificates git
-        curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | sudo -E bash -
-        sudo apt-get install -y nodejs
+        # Node: skip if the base image already ships it (custom-image case).
+        if ! command -v node >/dev/null 2>&1; then
+            curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+        fi
         # Browser SYSTEM libraries only -- browser binaries are per project.
         sudo npx --yes playwright@latest install-deps
     "
