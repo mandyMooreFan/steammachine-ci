@@ -1,21 +1,13 @@
 # Steam Machine CI
 
-Turn a Valve **Steam Machine** (the 2025 desktop cube — AMD Zen 4 6C/12T,
-RDNA3, 16GB RAM, SteamOS 3) into a parallel **Playwright** build server that
-**yields the box to games while they run** and gets back to work automatically
-when you quit.
+Use your steammachine to run CI/CD
 
-> This is a *Steam Machine*, not a Steam Deck. It's always on AC power and
-> wired ethernet, so this repo is about protecting your **framerate** while
-> gaming, not saving a battery.
+the 2025 desktop cube — AMD Zen 4 6C/12T, RDNA3, 16GB RAM
+
+turns off when you open a game. starts up when you close a game.
 
 ## What you get
 
-- A single long-lived container (`ci-runner`) with Node + Playwright, living
-  under `$HOME` so it survives SteamOS updates (which reset the read-only
-  root). See [ADR-0002](docs/adr/0002-container-under-home-not-native.md).
-- A background **gaming watcher** that pauses that container the instant a real
-  game launches and resumes it when the game exits.
 - One idempotent `install.sh` that sets the whole thing up and is safe to
   re-run after any SteamOS update.
 
@@ -74,7 +66,7 @@ The watcher (`~/.local/bin/gaming-watcher.sh`) polls every 5s for Steam's
 launch process — `reaper … SteamLaunch AppId=<id>` — which exists **only while
 a real game is running**.
 
-> ⚠️ It does **not** watch for `gamescope`. On SteamOS `gamescope` is the
+> It does **not** watch for `gamescope`. On SteamOS `gamescope` is the
 > session compositor and runs the *entire* time the box is in Gaming Mode, even
 > at the idle library — watching it would strangle CI whenever you're anywhere
 > near the game UI.
