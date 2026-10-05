@@ -137,5 +137,5 @@ runner keeps making real progress on one core while you game.
 | `install.sh` | Idempotent full bootstrap (host + container). Safe to re-run. |
 | `gaming-watcher.sh` | The throttle daemon (runs on the SteamOS host). |
 | `ci-watcher.service` | systemd **user** unit that keeps the watcher running. |
-| `CONTEXT.md` | Glossary — the canonical terms for this project. |
+| `GLOSSARY.md` | Glossary — the canonical terms for this project. |
 | `docs/adr/` | Architecture decision records. |
